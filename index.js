@@ -15,9 +15,12 @@ const argv = yargs(process.argv.slice(2))
 
         throw new Error('Parameters must be in [budget-uuid]/[account-uuid] format.');
     })
+    .count('verbose')
+    .alias('v', 'verbose')
     .demandOption(['token', 'source', 'target'])
     .parse();
 
+const VERBOSE_LEVEL = argv.verbose;
 const token = argv.token;
 const [ sourceBudgetId, sourceAccountId ] = argv.source.split('/');
 const [ targetBudgetId, targetAccountId ] = argv.target.split('/');
@@ -25,10 +28,14 @@ const [ targetBudgetId, targetAccountId ] = argv.target.split('/');
 const exchangeRate = await fetchExchangeRate();
 const sourceBalance = await getAccountBalance(token, sourceBudgetId, sourceAccountId);
 
-console.log(`Source balance is ${sourceBalance / 1000} EUR.`);
+if (VERBOSE_LEVEL > 0) {
+    console.log(`Source balance is ${sourceBalance / 1000} EUR.`);
+}
 
 const targetBalance = sourceBalance * exchangeRate;
 
-console.log(`Target balance will be ${targetBalance / 1000} TRY.`);
+if (VERBOSE_LEVEL > 0) {
+    console.log(`Target balance will be ${targetBalance / 1000} TRY.`);
+}
 
 await setAccountBalance(token, targetBudgetId, targetAccountId, targetBalance);
