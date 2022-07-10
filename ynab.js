@@ -21,20 +21,17 @@ export async function setAccountBalance(token, budgetId, accountId, balance) {
     const transaction = (await getAccountTransactions(token, budgetId, accountId))?.[0];
 
     if (!transaction) {
-        const response = await createTransaction(token, budgetId, accountId, balance - currentBalance);
-        console.log(response, await response.json());
+        await createTransaction(token, budgetId, accountId, balance - currentBalance);
         return;
     }
 
-    const response = await updateTransaction(
+    await updateTransaction(
         token,
         budgetId,
         accountId,
         transaction.id,
         Math.floor(balance - (currentBalance - transaction.amount)),
     );
-
-    console.log(response, await response.json());
 }
 
 export async function getAccountTransactions(token, budgetId, accountId) {
