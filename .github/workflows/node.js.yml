@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  sync-budgets:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,4 +15,4 @@ jobs:
         node-version: 16
         cache: 'npm'
     - run: yarn install --frozen-lockfile
-    - run: node ./index.js --token ${{ secrets.YNAB_TOKEN }} --source ${{ secrets.YNAB_SOURCE }} --target ${{ secrets.YNAB_TARGET }}
+    - run: node ./index.js --token "${{ secrets.YNAB_TOKEN }}" --source "${{ secrets.YNAB_SOURCE }}" --target "${{ secrets.YNAB_TARGET }}"
