@@ -15,4 +15,4 @@ jobs:
         node-version: 16
         cache: 'npm'
     - run: yarn install --frozen-lockfile
-    - run: node ./index.js --token $YNAB_TOKEN --source $YNAB_SOURCE --target $YNAB_TARGET
+    - run: node ./index.js --token ${{ secrets.YNAB_TOKEN }} --source ${{ secrets.YNAB_SOURCE }} --target ${{ secrets.YNAB_TARGET }}
