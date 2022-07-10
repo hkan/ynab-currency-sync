@@ -13,6 +13,6 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
-        cache: 'packages'
+        cache: 'npm'
     - run: npm ci
     - run: node ./index.js --token $YNAB_TOKEN --source $YNAB_SOURCE --target $YNAB_TARGET
