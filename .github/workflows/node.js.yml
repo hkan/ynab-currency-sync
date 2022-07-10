@@ -1,8 +1,9 @@
 name: Sync accounts
 
 on:
-  push:
-    branches: [ "main" ]
+  schedule:
+    - cron: '0 0,4,19,22 * * *'
+    - cron: '*/15 8-17 * * *'
 
 jobs:
   sync-budgets:
