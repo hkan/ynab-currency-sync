@@ -2,8 +2,11 @@ name: Sync accounts
 
 on:
   schedule:
-    - cron: '0 0,4,19,22 * * *'
-    - cron: '*/15 8-17 * * *'
+    # Scheduler runs on UTC time, so I adjusted these for UTC+3 (Turkish time)
+    # - cron: '0 0,4,19,22 * * *'
+    # - cron: '*/15 8-17 * * *'
+    - cron: '0 1,16,19,21 * * *'
+    - cron: '*/15 5-14 * * *'
 
 jobs:
   sync-budgets:
