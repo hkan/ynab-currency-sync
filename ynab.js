@@ -21,8 +21,16 @@ export async function setAccountBalance(token, budgetId, accountId, balance) {
     const transaction = (await getAccountTransactions(token, budgetId, accountId))?.[0];
 
     if (!transaction) {
-        await createTransaction(token, budgetId, accountId, balance - currentBalance);
+        if (global.VERBOSE_LEVEL > 0) {
+            console.log(`No existing transaction, creating new one with balance ${(balance - currentBalance) / 1000}`);
+        }
+
+        await createTransaction(token, budgetId, accountId, Math.floor(balance - currentBalance));
         return;
+    }
+
+    if (global.VERBOSE_LEVEL > 0) {
+        console.log(`Updating existing transaction. Current balance: ${currentBalance / 1000}, new balance: ${(balance - currentBalance) / 1000}`);
     }
 
     await updateTransaction(
@@ -30,7 +38,7 @@ export async function setAccountBalance(token, budgetId, accountId, balance) {
         budgetId,
         accountId,
         transaction.id,
-        Math.floor(balance - (currentBalance - transaction.amount)),
+        balance - (currentBalance - transaction.amount),
     );
 }
 
@@ -46,13 +54,20 @@ export async function getAccountTransactions(token, budgetId, accountId) {
         },
     );
 
+
+    if (response.status >= 300) {
+        const error = new Error('Fetching account transactions failed.');
+        error.response = response;
+        throw error;
+    }
+
     const { data } = await response.json();
 
     return data.transactions;
 }
 
 export async function updateTransaction(token, budgetId, accountId, transactionId, amount) {
-    return await fetch(
+    const response = await fetch(
         `https://api.youneedabudget.com/v1/budgets/${budgetId}/transactions/${transactionId}`,
         {
             method: 'PUT',
@@ -60,7 +75,7 @@ export async function updateTransaction(token, budgetId, accountId, transactionI
                 transaction: {
                     account_id: accountId,
                     amount,
-                }
+                },
             }),
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -68,12 +83,20 @@ export async function updateTransaction(token, budgetId, accountId, transactionI
             },
         },
     );
+
+    if (response.status >= 300) {
+        const error = new Error('Transaction update failed.');
+        error.response = response;
+        throw error;
+    }
+
+    return response;
 }
 
 export async function createTransaction(token, budgetId, accountId, amount) {
     const inflowCategory = await getInflowCategory(token, budgetId);
 
-    return await fetch(
+    const response = await fetch(
         `https://api.youneedabudget.com/v1/budgets/${budgetId}/transactions`,
         {
             method: 'POST',
@@ -93,6 +116,14 @@ export async function createTransaction(token, budgetId, accountId, amount) {
             },
         },
     );
+
+    if (response.status >= 300) {
+        const error = new Error('Transaction creation failed.');
+        error.response = response;
+        throw error;
+    }
+
+    return response;
 }
 
 export async function getInflowCategory(token, budgetId) {

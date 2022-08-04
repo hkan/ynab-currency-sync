@@ -20,7 +20,7 @@ const argv = yargs(process.argv.slice(2))
     .demandOption(['token', 'source', 'target'])
     .parse();
 
-const VERBOSE_LEVEL = argv.verbose;
+global.VERBOSE_LEVEL = argv.verbose;
 const token = argv.token;
 const [ sourceBudgetId, sourceAccountId ] = argv.source.split('/');
 const [ targetBudgetId, targetAccountId ] = argv.target.split('/');
@@ -38,4 +38,14 @@ if (VERBOSE_LEVEL > 0) {
     console.log(`Target balance will be ${targetBalance / 1000} TRY.`);
 }
 
-await setAccountBalance(token, targetBudgetId, targetAccountId, targetBalance);
+try {
+    await setAccountBalance(token, targetBudgetId, targetAccountId, targetBalance);
+} catch (e) {
+    console.log(`Error: ${e?.message}`);
+
+    if (e?.response && VERBOSE_LEVEL > 0) {
+        console.log(await e.response.json())
+    } else if (VERBOSE_LEVEL > 0) {
+        console.log(e);
+    }
+}
