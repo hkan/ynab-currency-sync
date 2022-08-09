@@ -38,7 +38,7 @@ export async function setAccountBalance(token, budgetId, accountId, balance) {
         budgetId,
         accountId,
         transaction.id,
-        balance - (currentBalance - transaction.amount),
+        Math.floor(balance - (currentBalance - transaction.amount)),
     );
 }
 
