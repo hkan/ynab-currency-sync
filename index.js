@@ -48,4 +48,6 @@ try {
     } else if (VERBOSE_LEVEL > 0) {
         console.log(e);
     }
+
+    process.exit(1);
 }
